@@ -25,6 +25,11 @@ new_output_handler(source = identity, text = identity, graphics = identity,
 \item{value}{Function to handle the values returned from evaluation. If it
 only has one argument, only visible values are handled; if it has more
 arguments, the second argument indicates whether the value is visible.}
+
+\item{calling_handlers}{List of calling handlers installed in the
+innermost context. In particular, these handlers have precedence
+over the exiting handler installed by \code{\link{evaluate}()}
+when \code{stop_on_error} is set to 0.}
 }
 \value{
 A new \code{output_handler} object

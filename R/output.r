@@ -54,13 +54,18 @@ render <- function(x) if (isS4(x)) methods::show(x) else print(x)
 #' @param value Function to handle the values returned from evaluation. If it
 #'   only has one argument, only visible values are handled; if it has more
 #'   arguments, the second argument indicates whether the value is visible.
+#' @param calling_handlers List of calling handlers installed in the
+#'   innermost context. In particular, these handlers have precedence
+#'   over the exiting handler installed by \code{\link{evaluate}()}
+#'   when \code{stop_on_error} is set to 0.
 #' @return A new \code{output_handler} object
 #' @aliases output_handler
 #' @export
 new_output_handler <- function(source = identity,
                                text = identity, graphics = identity,
                                message = identity, warning = identity,
-                               error = identity, value = render) {
+                               error = identity, value = render,
+                               calling_handlers = list()) {
   source <- match.fun(source)
   stopifnot(length(formals(source)) >= 1)
   text <- match.fun(text)
@@ -78,7 +83,7 @@ new_output_handler <- function(source = identity,
 
   structure(list(source = source, text = text, graphics = graphics,
                  message = message, warning = warning, error = error,
-                 value = value),
+                 value = value, calling_handlers = calling_handlers),
             class = "output_handler")
 }
 

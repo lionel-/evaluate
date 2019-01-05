@@ -96,3 +96,18 @@ test_that("multiple lines of comments do not lose the terminating \\n", {
   ev <- evaluate("# foo\n#bar")
   expect_equal(ev[[1]][["src"]], "# foo\n")
 })
+
+test_that("user can register calling handlers", {
+  cnd <- structure(list(), class = c("foobar", "condition"))
+  hnd <- function(cnd) handled <<- cnd
+
+  handled <- NULL
+  out_hnd <- new_output_handler(calling_handlers = list(foobar = hnd))
+  evaluate("signalCondition(cnd)", output_handler = out_hnd)
+  expect_is(handled, "foobar")
+
+  handled <- NULL
+  out_hnd <- new_output_handler(calling_handlers = list(error = hnd))
+  evaluate("stop('tilt')", stop_on_error = 0, output_handler = out_hnd)
+  expect_is(handled, "error")
+})
